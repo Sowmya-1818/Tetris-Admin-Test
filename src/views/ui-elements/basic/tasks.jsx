@@ -2943,7 +2943,7 @@ const Tasks = () => {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const tasksPerPage = 10;
-  const [totalPages, setTotalPages] = useState(1); // Add this line to initialize totalPages
+  const [totalPages, setTotalPages] = useState(); // Add this line to initialize totalPages
 
   // Dark theme colors (matching user management page)
   const darkTheme = {

@@ -481,7 +481,7 @@ const PendingWithdrawals = () => {
   const navigate = useNavigate();
   const [withdrawals, setWithdrawals] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] = useState();
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [showApproveModal, setShowApproveModal] = useState(false);
@@ -1078,9 +1078,7 @@ const PendingWithdrawals = () => {
                                       textAlign: "center",
                                     }}
                                   >
-                                    {new Date(
-                                      withdrawal.createdAt
-                                    ).toLocaleString() || "N/A"}
+                                    {withdrawal.createdAt || "N/A"}
                                   </td>
                                   <td
                                     style={{

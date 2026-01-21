@@ -1,4 +1,3 @@
-
 // "use client";
 
 // import { useState, useEffect } from "react";
@@ -636,7 +635,6 @@
 //     setIsExporting(false);
 //   }
 // };
-
 
 //   // Helper functions to extract data from different item types
 //   const getItemDescription = (item) => {
@@ -1559,32 +1557,37 @@
 
 // export default UserGameDetails;
 
+"use client";
 
-
-"use client"
-
-import { useState, useEffect } from "react"
-import { CCard, CCardHeader, CCardBody, CButton, CBreadcrumb, CBreadcrumbItem } from "@coreui/react"
-import { getData } from "../../../apiConfigs/apiCalls"
-import { useParams, useNavigate } from "react-router-dom"
-import * as XLSX from "xlsx"
-import { SEARCH, GET_USER_HISTORY } from "../../../apiConfigs/endpoints"
+import { useState, useEffect } from "react";
+import {
+  CCard,
+  CCardHeader,
+  CCardBody,
+  CButton,
+  CBreadcrumb,
+  CBreadcrumbItem,
+} from "@coreui/react";
+import { getData } from "../../../apiConfigs/apiCalls";
+import { useParams, useNavigate } from "react-router-dom";
+import * as XLSX from "xlsx";
+import { SEARCH, GET_USER_HISTORY } from "../../../apiConfigs/endpoints";
 
 const UserGameDetails = () => {
-  const { userId } = useParams()
-  const navigate = useNavigate()
-  const [userHistory, setUserHistory] = useState([])
-  const [filteredHistory, setFilteredHistory] = useState([])
-  const [selectedUserId, setSelectedUserId] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [totalRecords, setTotalRecords] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [userStats, setUserStats] = useState(null)
-  const [isExporting, setIsExporting] = useState(false)
-  const limit = 10
-  const [historyType, setHistoryType] = useState("")
+  const { userId } = useParams();
+  const navigate = useNavigate();
+  const [userHistory, setUserHistory] = useState([]);
+  const [filteredHistory, setFilteredHistory] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [userStats, setUserStats] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const limit = 10;
+  const [historyType, setHistoryType] = useState("");
 
   const historyTypeOptions = [
     { value: "", label: "All Types" },
@@ -1594,37 +1597,37 @@ const UserGameDetails = () => {
     { value: "dailyreward", label: "Daily Reward" },
     { value: "referral", label: "Referral" },
     { value: "withdrawal", label: "Withdrawal" },
-  ]
+  ];
 
   // Fetch user history with improved pagination logic
   const fetchUserHistory = async (page = 1, type = "") => {
-    const currentUserId = userId || sessionStorage.getItem("selectedUserId")
+    const currentUserId = userId || sessionStorage.getItem("selectedUserId");
 
     if (!currentUserId) {
-      setError("No userId provided")
-      navigate("/gamehistory")
-      return
+      setError("No userId provided");
+      navigate("/gamehistory");
+      return;
     }
 
-    setLoading(true)
-    setError("")
+    setLoading(true);
+    setError("");
 
     try {
       if (!type || type === "") {
         const response = await getData(
-          `${GET_USER_HISTORY}?userId=${encodeURIComponent(currentUserId)}&page=${page}&limit=${limit}`,
-        )
+          `${GET_USER_HISTORY}?userId=${encodeURIComponent(currentUserId)}&page=${page}&limit=${limit}`
+        );
 
         if (response.success) {
-          setUserHistory(response.data || [])
-          setFilteredHistory(response.data || [])
-          setTotalPages(response.totalPages || 1)
-          setTotalRecords(response.totalRecords || 0)
-          setUserStats(response.userStats || null)
-          setSelectedUserId(currentUserId)
-          sessionStorage.setItem("selectedUserId", currentUserId)
+          setUserHistory(response.data || []);
+          setFilteredHistory(response.data || []);
+          setTotalPages(response.totalPages || 1);
+          setTotalRecords(response.totalRecords || 0);
+          setUserStats(response.userStats || null);
+          setSelectedUserId(currentUserId);
+          sessionStorage.setItem("selectedUserId", currentUserId);
         } else {
-          throw new Error(response.message || "Failed to fetch user history")
+          throw new Error(response.message || "Failed to fetch user history");
         }
       } else {
         const params = {
@@ -1632,148 +1635,151 @@ const UserGameDetails = () => {
           userId: currentUserId,
           page: page,
           limit: limit,
-        }
+        };
 
         if (type === "withdrawal") {
-          params.status = "transferred"
+          params.status = "transferred";
         }
 
         const queryString = Object.entries(params)
-          .map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`)
-          .join("&")
+          .map(
+            ([key, val]) =>
+              `${encodeURIComponent(key)}=${encodeURIComponent(val)}`
+          )
+          .join("&");
 
-        const response = await getData(`${SEARCH}?${queryString}`)
-        let dataList = []
+        const response = await getData(`${SEARCH}?${queryString}`);
+        let dataList = [];
 
         if (type === "gamehistory") {
-          dataList = response?.history || []
+          dataList = response?.history || [];
         } else if (type === "tasks") {
-          dataList = response?.tasks || []
+          dataList = response?.tasks || [];
         } else if (type === "ads") {
-          dataList = response?.ads || []
+          dataList = response?.ads || [];
         } else if (type === "dailyreward") {
-          dataList = response?.rewards || []
+          dataList = response?.rewards || [];
         } else if (type === "referral") {
-          dataList = response?.data || []
+          dataList = response?.data || [];
         } else if (type === "withdrawal") {
-          dataList = response?.withdrawals || []
+          dataList = response?.withdrawals || [];
         }
 
-        setUserHistory(dataList)
-        setFilteredHistory(dataList)
-        setTotalPages(response?.totalPages || 1)
-        setTotalRecords(response?.length || dataList.length)
-        setUserStats(null)
+        setUserHistory(dataList);
+        setFilteredHistory(dataList);
+        setTotalPages(response?.totalPages || 1);
+        setTotalRecords(response?.length || dataList.length);
+        setUserStats(null);
 
-        setSelectedUserId(currentUserId)
-        sessionStorage.setItem("selectedUserId", currentUserId)
+        setSelectedUserId(currentUserId);
+        sessionStorage.setItem("selectedUserId", currentUserId);
       }
     } catch (error) {
-      console.error("Error fetching user history:", error)
+      console.error("Error fetching user history:", error);
 
-      let errorMessage = "Please try again"
+      let errorMessage = "Please try again";
       if (error.response) {
-        errorMessage = `Server Error (${error.response.status}): ${error.response.data?.message || error.message}`
+        errorMessage = `Server Error (${error.response.status}): ${error.response.data?.message || error.message}`;
       } else if (error.request) {
-        errorMessage = "Network Error: Unable to connect to server"
+        errorMessage = "Network Error: Unable to connect to server";
       } else {
-        errorMessage = error.message || "Unknown error occurred"
+        errorMessage = error.message || "Unknown error occurred";
       }
 
-      setError(`Failed to fetch user data: ${errorMessage}`)
-      setUserHistory([])
-      setFilteredHistory([])
-      setTotalPages(1)
-      setTotalRecords(0)
-      setUserStats(null)
+      setError(`Failed to fetch user data: ${errorMessage}`);
+      setUserHistory([]);
+      setFilteredHistory([]);
+      setTotalPages(1);
+      setTotalRecords(0);
+      setUserStats(null);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    const currentUserId = userId || sessionStorage.getItem("selectedUserId")
+    const currentUserId = userId || sessionStorage.getItem("selectedUserId");
 
     if (!currentUserId) {
-      setError("No userId provided")
-      navigate("/gamehistory")
-      return
+      setError("No userId provided");
+      navigate("/gamehistory");
+      return;
     }
 
-    setSelectedUserId(currentUserId)
-    sessionStorage.setItem("selectedUserId", currentUserId)
-    fetchUserHistory(currentPage)
-  }, [userId])
+    setSelectedUserId(currentUserId);
+    sessionStorage.setItem("selectedUserId", currentUserId);
+    fetchUserHistory(currentPage);
+  }, [userId]);
 
   useEffect(() => {
     if (selectedUserId) {
-      setCurrentPage(1)
-      fetchUserHistory(1, historyType)
+      setCurrentPage(1);
+      fetchUserHistory(1, historyType);
     }
-  }, [historyType])
+  }, [historyType]);
 
   const nextPage = () => {
     if (currentPage < totalPages) {
-      const newPage = currentPage + 1
-      setCurrentPage(newPage)
-      fetchUserHistory(newPage, historyType)
+      const newPage = currentPage + 1;
+      setCurrentPage(newPage);
+      fetchUserHistory(newPage, historyType);
     }
-  }
+  };
 
   const prevPage = () => {
     if (currentPage > 1) {
-      const newPage = currentPage - 1
-      setCurrentPage(newPage)
-      fetchUserHistory(newPage, historyType)
+      const newPage = currentPage - 1;
+      setCurrentPage(newPage);
+      fetchUserHistory(newPage, historyType);
     }
-  }
+  };
 
   const goToPage = (pageNumber) => {
-    setCurrentPage(pageNumber)
-    fetchUserHistory(pageNumber, historyType)
-  }
+    setCurrentPage(pageNumber);
+    fetchUserHistory(pageNumber, historyType);
+  };
 
   const handleGoBack = () => {
-    sessionStorage.removeItem("selectedUserId")
-    navigate("/gamehistory")
-  }
+    sessionStorage.removeItem("selectedUserId");
+    navigate("/gamehistory");
+  };
 
   const handleReset = () => {
-    setHistoryType("")
-    setCurrentPage(1)
-    fetchUserHistory(1, "")
-  }
+    setHistoryType("");
+    setCurrentPage(1);
+    fetchUserHistory(1, "");
+  };
 
   const fetchAllDataForExport = async () => {
-    const currentUserId = userId || sessionStorage.getItem("selectedUserId")
+    const currentUserId = userId || sessionStorage.getItem("selectedUserId");
     if (!currentUserId) {
-      throw new Error("No userId provided")
+      throw new Error("No userId provided");
     }
 
-    setIsExporting(true)
+    setIsExporting(true);
 
     try {
-      let allData = []
+      let allData = [];
 
       if (!historyType || historyType === "") {
-        let page = 1
-        let totalPages = 1
+        let page = 1;
+        let totalPages = 1;
 
         do {
           const response = await getData(
-            `${GET_USER_HISTORY}?userId=${encodeURIComponent(currentUserId)}&page=${page}&limit=100`,
-          )
+            `${GET_USER_HISTORY}?userId=${encodeURIComponent(currentUserId)}&page=${page}&limit=100`
+          );
           if (response.success && response.data) {
-            allData = [...allData, ...response.data]
-            totalPages = response.totalPages || 1
-            page++
+            allData = [...allData, ...response.data];
+            totalPages = response.totalPages || 1;
+            page++;
           } else {
-            break
+            break;
           }
-        } while (page <= totalPages)
+        } while (page <= totalPages);
       } else {
-        let page = 1
-        let totalPages = 1
+        let page = 1;
+        let totalPages = 1;
 
         do {
           const params = {
@@ -1781,74 +1787,84 @@ const UserGameDetails = () => {
             userId: currentUserId,
             page: page,
             limit: 100,
-          }
+          };
 
           if (historyType === "withdrawal") {
-            params.status = "transferred"
+            params.status = "transferred";
           }
 
           const queryString = Object.entries(params)
-            .map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`)
-            .join("&")
+            .map(
+              ([key, val]) =>
+                `${encodeURIComponent(key)}=${encodeURIComponent(val)}`
+            )
+            .join("&");
 
-          const response = await getData(`${SEARCH}?${queryString}`)
-          let dataList = []
+          const response = await getData(`${SEARCH}?${queryString}`);
+          let dataList = [];
 
           if (historyType === "gamehistory") {
-            dataList = response?.history || []
+            dataList = response?.history || [];
           } else if (historyType === "tasks") {
-            dataList = response?.tasks || []
+            dataList = response?.tasks || [];
           } else if (historyType === "ads") {
-            dataList = response?.ads || []
+            dataList = response?.ads || [];
           } else if (historyType === "dailyreward") {
-            dataList = response?.rewards || []
+            dataList = response?.rewards || [];
           } else if (historyType === "referral") {
-            dataList = response?.data || []
+            dataList = response?.data || [];
           } else if (historyType === "withdrawal") {
-            dataList = response?.withdrawals || []
+            dataList = response?.withdrawals || [];
           }
 
           if (dataList && dataList.length > 0) {
-            allData = [...allData, ...dataList]
-            totalPages = response?.totalPages || 1
-            page++
+            allData = [...allData, ...dataList];
+            totalPages = response?.totalPages || 1;
+            page++;
           } else {
-            break
+            break;
           }
-        } while (page <= totalPages)
+        } while (page <= totalPages);
       }
 
-      return allData
+      return allData;
     } finally {
-      setIsExporting(false)
+      setIsExporting(false);
     }
-  }
+  };
 
   const downloadPlayerExcel = async () => {
     try {
-      setIsExporting(true)
+      setIsExporting(true);
 
-      const allData = await fetchAllDataForExport()
+      const allData = await fetchAllDataForExport();
 
       if (!allData || allData.length === 0) {
-        alert("No data to export")
-        return
+        alert("No data to export");
+        return;
       }
 
-      let formattedData = []
+      let formattedData = [];
 
       if (!historyType || historyType === "") {
         formattedData = allData.map((item, index) => ({
           SNo: index + 1,
           UserName: item.userName || item.referringUser?.userName || "N/A",
           GameTitle: item.gameTitle || "N/A",
-          CreatedAt: item.createdAt || item.completionTime|| item.claimedAt || "N/A",
-          InitialBalance: item.initialBalance || item.InitalBalance || item.Initalbalance ||item.initialbalnce ||"N/A",
+          CreatedAt:
+            item.createdAt || item.completionTime || item.claimedAt || "N/A",
+          InitialBalance:
+            item.initialBalance ||
+            item.InitalBalance ||
+            item.Initalbalance ||
+            item.initialbalnce ||
+            "N/A",
           BetAmount: getItemAmount(item),
           Prize: getItemReward(item),
           FinalBalance: getItemBalance(item),
           Status: getItemStatus(item),
-        }))
+          HistoryType: item.type || "N/A",
+        }));
       } else if (historyType === "gamehistory") {
         formattedData = allData.map((item, index) => ({
           SNo: index + 1,
@@ -1859,9 +1875,10 @@ const UserGameDetails = () => {
           InitialBalance: item.initialBalance || 0,
           BetAmount: item.betAmount || 0,
           Prize: item.winAmount || 0,
+          Level: item.level || 0,
           FinalBalance: item.finalBalance || 0,
           PlayedStatus: item.playedStatus || "N/A",
-        }))
+        }));
       } else if (historyType === "tasks") {
         formattedData = allData.map((item, index) => ({
           SNo: index + 1,
@@ -1871,36 +1888,42 @@ const UserGameDetails = () => {
           RewardAmount: item.rewardPoints || 0,
           FinalBalance: item.finalBalance || 0,
           Status: item.status || "Completed",
-        }))
+        }));
       } else if (historyType === "ads") {
         formattedData = allData.map((item, index) => ({
           SNo: index + 1,
           UserName: item.userName || "N/A",
-          Initiated: item.completionTime ||"N/A",
+          Initiated: item.completionTime || "N/A",
           InitialBalance: item.initialBalance || 0,
           RewardPoints: item.rewardPoints || 0,
           FinalBalance: item.finalBalance || 0,
-        }))
+        }));
       } else if (historyType === "dailyreward") {
         formattedData = allData.map((item, index) => ({
           SNo: index + 1,
           UserName: item.userName || "N/A",
-          Initiated: item.claimedAt|| "N/A",
+          Initiated: item.claimedAt || "N/A",
           InitialBalance: item.initialBalance || 0,
           RewardAmount: item.rewardPoints || 0,
           FinalBalance: item.finalBalance || 0,
           Status: item.status || "Claimed",
-        }))
+        }));
       } else if (historyType === "referral") {
         formattedData = allData.map((item, index) => ({
           SNo: index + 1,
           ReferringUserName: item.referringUser?.userName || "N/A",
+          ReferringUserId: item.referringUser?._id
+            ? `ObjectId("${item.referringUser._id}"),`
+            : "N/A",
           ReferredUserName: item.referredUser?.userName || "N/A",
+          ReferredUserId: item.referredUser?._id
+            ? `ObjectId("${item.referredUser._id}"),`
+            : "N/A",
           Initiated: item.createdAt || "N/A",
           InitialBalance: item.initialBalance || 0,
           ReferralAmount: item.referralAmount || 0,
           FinalBalance: item.finalBalance || 0,
-        }))
+        }));
       } else if (historyType === "withdrawal") {
         formattedData = allData.map((item, index) => ({
           SNo: index + 1,
@@ -1910,378 +1933,991 @@ const UserGameDetails = () => {
           Amount: item.amount || 0,
           USDTAmount: item.usdt_Amount || 0,
           Status: item.status || "N/A",
-        }))
+        }));
       }
 
-      const sheetName = historyType ? `${selectedUserId}_${historyType}` : `${selectedUserId}_history`
-      const maxSheetNameLength = 31
+      const sheetName = historyType
+        ? `${selectedUserId}_${historyType}`
+        : `${selectedUserId}_history`;
+      const maxSheetNameLength = 31;
       const truncatedSheetName =
-        sheetName.length > maxSheetNameLength ? sheetName.substring(0, maxSheetNameLength) : sheetName
+        sheetName.length > maxSheetNameLength
+          ? sheetName.substring(0, maxSheetNameLength)
+          : sheetName;
 
-      const ws = XLSX.utils.json_to_sheet(formattedData)
-      const wb = XLSX.utils.book_new()
-      XLSX.utils.book_append_sheet(wb, ws, truncatedSheetName)
+      const ws = XLSX.utils.json_to_sheet(formattedData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, truncatedSheetName);
 
-      const fileName = `${selectedUserId}_${historyType || "all"}_${new Date().toISOString().split("T")[0]}.xlsx`
-      XLSX.writeFile(wb, fileName)
+      const fileName = `${selectedUserId}_${historyType || "all"}_${new Date().toISOString().split("T")[0]}.xlsx`;
+      XLSX.writeFile(wb, fileName);
 
-      alert(`Successfully exported ${formattedData.length} records to Excel!`)
+      alert(`Successfully exported ${formattedData.length} records to Excel!`);
     } catch (error) {
-      console.error("Error exporting to Excel:", error)
-      alert("Failed to export data. Please try again.")
+      console.error("Error exporting to Excel:", error);
+      alert("Failed to export data. Please try again.");
     } finally {
-      setIsExporting(false)
+      setIsExporting(false);
     }
-  }
+  };
 
   const getItemDescription = (item) => {
     switch (item.type) {
       case "Game":
-        return item.gameTitle || "Game Activity"
+        return item.gameTitle || "Game Activity";
       case "Task":
-        return item.TaskName || "Task Activity"
+        return item.TaskName || "Task Activity";
       case "Ad":
-        return item.AdName || "Ad Activity"
+        return item.AdName || "Ad Activity";
       case "Reward":
-        return "Daily Reward Claimed"
+        return "Daily Reward Claimed";
       case "Referral":
-        return `Referred: ${item.referredUser?.username || "User"}`
+        return `Referred: ${item.referredUser?.username || "User"}`;
       case "Withdrawal":
-        return "Withdrawal Request"
+        return "Withdrawal Request";
       default:
-        return "Activity"
+        return "Activity";
     }
-  }
+  };
 
   const getItemAmount = (item) => {
     switch (item.type) {
       case "Game":
-        return item.betAmount || 0
+        return item.betAmount || 0;
       case "Withdrawal":
-        return item.amount || 0
+        return item.amount || 0;
       default:
-        return 0
+        return 0;
     }
-  }
+  };
 
   const getItemReward = (item) => {
     switch (item.type) {
       case "Game":
-        return item.winAmount || 0
+        return item.winAmount || 0;
       case "Task":
-        return item.Rewardpoints || 0
+        return item.Rewardpoints || 0;
       case "Ad":
-        return item.Rewardpoints || 0
+        return item.Rewardpoints || 0;
       case "Reward":
-        return item.rewardPoints || 0
+        return item.rewardPoints || 0;
       case "Referral":
-        return item.referralamount || 0
+        return item.referralamount || 0;
       default:
-        return 0
+        return 0;
     }
-  }
+  };
 
   const getItemBalance = (item) => {
-    return item.finalbalance || item.finalBalance || item.FinalBalance || 0
-  }
+    return item.finalbalance || item.finalBalance || item.FinalBalance || 0;
+  };
 
   const getItemStatus = (item) => {
     switch (item.type) {
       case "Game":
-        return item.playedStatus || "N/A"
+        return item.playedStatus || "N/A";
       case "Task":
       case "Ad":
-        return item.Status || "Completed"
+        return item.Status || "Completed";
       case "Reward":
-        return "Claimed"
+        return "Claimed";
       case "Referral":
-        return "Completed"
+        return "Completed";
       case "Withdrawal":
-        return item.status || "N/A"
+        return item.status || "N/A";
       default:
-        return "N/A"
+        return "N/A";
     }
-  }
+  };
 
   const renderTableHeaders = () => {
     if (!historyType || historyType === "") {
       return (
         <tr>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>S.NO</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>USER NAME</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>GAME TITLE</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>CREATED AT</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>INITIAL BALANCE</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>BET AMOUNT</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>PRIZE</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>FINAL BALANCE</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>PLAYED STATUS</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>HISTORY TYPE</th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            S.NO
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            USER NAME
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            GAME TITLE
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            CREATED AT
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            INITIAL BALANCE
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            BET AMOUNT
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            PRIZE
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            FINAL BALANCE
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            PLAYED STATUS
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            HISTORY TYPE
+          </th>
         </tr>
-      )
+      );
     } else if (historyType === "gamehistory") {
       return (
         <tr>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>S.NO</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>USER NAME</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>GAME TITLE</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>CREATED AT</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>UPDATED AT</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>INITIAL BALANCE</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>BET AMOUNT</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>PRIZE</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>FINAL BALANCE</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>PLAYED STATUS</th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            S.NO
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            USER NAME
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            GAME TITLE
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            CREATED AT
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            UPDATED AT
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            INITIAL BALANCE
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            BET AMOUNT
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            PRIZE
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            LEVEL
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            FINAL BALANCE
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            PLAYED STATUS
+          </th>
         </tr>
-      )
+      );
     } else if (historyType === "tasks") {
       return (
         <tr>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>S.NO</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>USER NAME</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>INITIATED</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>INITIAL BALANCE</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>REWARD AMOUNT</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>FINAL BALANCE</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>STATUS</th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            S.NO
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            USER NAME
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            INITIATED
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            INITIAL BALANCE
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            REWARD AMOUNT
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            FINAL BALANCE
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            STATUS
+          </th>
         </tr>
-      )
+      );
     } else if (historyType === "ads") {
       return (
         <tr>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>S.NO</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>USER NAME</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>INITIATED</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>INITIAL BALANCE</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>REWARD POINTS</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>FINAL BALANCE</th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            S.NO
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            USER NAME
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            INITIATED
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            INITIAL BALANCE
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            REWARD POINTS
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            FINAL BALANCE
+          </th>
         </tr>
-      )
+      );
     } else if (historyType === "dailyreward") {
       return (
         <tr>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>S.NO</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>USER NAME</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>INITIATED</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>INITIAL BALANCE</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>REWARD AMOUNT</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>FINAL BALANCE</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>STATUS</th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            S.NO
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            USER NAME
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            INITIATED
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            INITIAL BALANCE
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            REWARD AMOUNT
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            FINAL BALANCE
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            STATUS
+          </th>
         </tr>
-      )
+      );
     } else if (historyType === "referral") {
       return (
         <tr>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>S.NO</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>REFERRING USER NAME</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>REFERRED USER NAME</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>INITIATED</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>INITIAL BALANCE</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>REFERRAL AMOUNT</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>FINAL BALANCE</th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            S.NO
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            REFERRING USER NAME
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            REFERRED USER NAME
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            INITIATED
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            INITIAL BALANCE
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            REFERRAL AMOUNT
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            FINAL BALANCE
+          </th>
         </tr>
-      )
+      );
     } else if (historyType === "withdrawal") {
       return (
         <tr>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>S.NO</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>USER NAME</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>INITIATED</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>WALLET ADDRESS</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>AMOUNT</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>USDT AMOUNT</th>
-          <th style={{ color: "white", fontWeight: "bold", backgroundColor: "#2d2d2d", padding: "12px" }}>STATUS</th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            S.NO
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            USER NAME
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            INITIATED
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            WALLET ADDRESS
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            AMOUNT
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            USDT AMOUNT
+          </th>
+          <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+            }}
+          >
+            STATUS
+          </th>
         </tr>
-      )
+      );
     }
-  }
+  };
 
   const renderTableRows = () => {
     if (loading) {
       return (
         <tr>
-          <td colSpan={10} className="text-center py-4" style={{ backgroundColor: "#1a1a1a", color: "white", padding: "20px" }}>
+          <td
+            colSpan={10}
+            className="text-center py-4"
+            style={{
+              backgroundColor: "#1a1a1a",
+              color: "white",
+              padding: "20px",
+            }}
+          >
             <div className="d-flex justify-content-center align-items-center">
-              <div className="spinner-border" style={{ color: "#8b5cf6" }} role="status">
+              <div
+                className="spinner-border"
+                style={{ color: "#8b5cf6" }}
+                role="status"
+              >
                 <span className="visually-hidden">Loading...</span>
               </div>
               <span className="ms-2">Loading history data...</span>
             </div>
           </td>
         </tr>
-      )
+      );
     }
 
     if (filteredHistory.length === 0) {
       return (
         <tr>
-          <td colSpan={10} className="text-center py-4" style={{ backgroundColor: "#1a1a1a", color: "#888", padding: "20px" }}>
+          <td
+            colSpan={10}
+            className="text-center py-4"
+            style={{
+              backgroundColor: "#1a1a1a",
+              color: "#888",
+              padding: "20px",
+            }}
+          >
             <h6>No {historyType || "history"} available</h6>
           </td>
         </tr>
-      )
+      );
     }
 
     return filteredHistory.map((item, index) => {
-      const serialNumber = (currentPage - 1) * limit + index + 1
+      const serialNumber = (currentPage - 1) * limit + index + 1;
       const date =
-        item.date || item.createdAt || item.updatedAt || item.CompletionTime || item.claimedAt || item.timestamp
-      const formattedDate = date ? new Date(date).toLocaleString() : "N/A"
+        item.date ||
+        item.createdAt ||
+        item.updatedAt ||
+        item.CompletionTime ||
+        item.claimedAt ||
+        item.timestamp;
+      const formattedDate = date ? new Date(date).toLocaleString() : "N/A";
 
       if (!historyType || historyType === "") {
         return (
           <tr
             key={item._id || index}
-            style={{ backgroundColor: "#1a1a1a", color: "white", borderBottom: "1px solid #333" }}
+            style={{
+              backgroundColor: "#1a1a1a",
+              color: "white",
+              borderBottom: "1px solid #333",
+            }}
             className="table-row-hover"
           >
-            <td style={{ padding: "12px" }} className="fw-bold">{serialNumber}</td>
-            <td style={{ padding: "12px" }}>{item.userName || item.referringUser?.userName || "N/A"}</td>
+            <td style={{ padding: "12px" }} className="fw-bold">
+              {serialNumber}
+            </td>
+            <td style={{ padding: "12px" }}>
+              {item.userName || item.referringUser?.userName || "N/A"}
+            </td>
             <td style={{ padding: "12px" }}>{item.gameTitle || "N/A"}</td>
             <td style={{ padding: "12px" }}>{formattedDate}</td>
-            <td style={{ padding: "12px" }}>{item.initialbalance || item.initialBalance || item.InitialBalance || 0}</td>
+            <td style={{ padding: "12px" }}>
+              {item.initialbalance ||
+                item.initialBalance ||
+                item.InitialBalance ||
+                0}
+            </td>
             <td style={{ padding: "12px" }}>{item.betAmount || 0}</td>
             <td style={{ padding: "12px" }}>
-              {item.prize || item.winAmount || item.rewardPoints || item.Rewardpoints || item.referralAmount || 0}
+              {item.prize ||
+                item.winAmount ||
+                item.rewardPoints ||
+                item.Rewardpoints ||
+                item.referralAmount ||
+                0}
             </td>
-            <td style={{ padding: "12px" }}>{item.finalbalance || item.finalBalance || item.FinalBalance || 0}</td>
             <td style={{ padding: "12px" }}>
-              {item.playedstatus || item.playedStatus || item.status || (item.initiated ? "Completed" : "N/A") || "N/A"}
+              {item.finalbalance || item.finalBalance || item.FinalBalance || 0}
+            </td>
+            <td style={{ padding: "12px" }}>
+              {item.playedstatus ||
+                item.playedStatus ||
+                item.status ||
+                (item.initiated ? "Completed" : "N/A") ||
+                "N/A"}
             </td>
             <td style={{ padding: "12px" }}>
               <span
                 className="badge"
                 style={{
-                  backgroundColor: item.activityType === "Game"
-                    ? "#3b82f6"
-                    : item.activityType === "Task"
-                      ? "#06b6d4"
-                      : item.activityType === "Ad"
-                        ? "#f59e0b"
-                        : item.activityType === "Daily Reward"
-                          ? "#10b981"
-                          : item.activityType === "Referral"
-                            ? "#6b7280"
-                            : item.activityType === "Withdrawal"
-                              ? "#ef4444"
-                              : "#374151",
+                  backgroundColor:
+                    item.activityType === "Game"
+                      ? "#3b82f6"
+                      : item.activityType === "Task"
+                        ? "#06b6d4"
+                        : item.activityType === "Ad"
+                          ? "#f59e0b"
+                          : item.activityType === "Daily Reward"
+                            ? "#10b981"
+                            : item.activityType === "Referral"
+                              ? "#6b7280"
+                              : item.activityType === "Withdrawal"
+                                ? "#ef4444"
+                                : "#374151",
                   color: "white",
                   padding: "4px 8px",
                   borderRadius: "4px",
-                  fontSize: "12px"
+                  fontSize: "12px",
                 }}
               >
                 {item.type || "N/A"}
               </span>
             </td>
           </tr>
-        )
+        );
       } else if (historyType === "gamehistory") {
         return (
           <tr
             key={item._id || index}
-            style={{ backgroundColor: "#1a1a1a", color: "white", borderBottom: "1px solid #333" }}
+            style={{
+              backgroundColor: "#1a1a1a",
+              color: "white",
+              borderBottom: "1px solid #333",
+            }}
             className="table-row-hover"
           >
-            <td style={{ padding: "12px" }} className="fw-bold">{serialNumber}</td>
+            <td style={{ padding: "12px" }} className="fw-bold">
+              {serialNumber}
+            </td>
             <td style={{ padding: "12px" }}>{item.userName || "N/A"}</td>
             <td style={{ padding: "12px" }}>{item.gameTitle || "N/A"}</td>
-            <td style={{ padding: "12px" }}>{item.createdAt ? new Date(item.createdAt).toLocaleString() : "N/A"}</td>
-            <td style={{ padding: "12px" }}>{item.updatedAt ? new Date(item.updatedAt).toLocaleString() : "N/A"}</td>
+            <td style={{ padding: "12px" }}>
+              {item.createdAt|| "N/A"}
+            </td>
+            <td style={{ padding: "12px" }}>
+              {item.updatedAt||"N/A"}
+            </td>
             <td style={{ padding: "12px" }}>{item.initialBalance || 0}</td>
             <td style={{ padding: "12px" }}>{item.betAmount || 0}</td>
             <td style={{ padding: "12px" }}>{item.winAmount || 0}</td>
+            <td style={{ padding: "12px" }}>{item.level || 0}</td>
             <td style={{ padding: "12px" }}>{item.finalBalance || 0}</td>
             <td style={{ padding: "12px" }}>{item.playedStatus || "N/A"}</td>
           </tr>
-        )
+        );
       } else if (historyType === "tasks") {
         return (
           <tr
             key={item._id || index}
-            style={{ backgroundColor: "#1a1a1a", color: "white", borderBottom: "1px solid #333" }}
+            style={{
+              backgroundColor: "#1a1a1a",
+              color: "white",
+              borderBottom: "1px solid #333",
+            }}
             className="table-row-hover"
           >
-            <td style={{ padding: "12px" }} className="fw-bold">{serialNumber}</td>
+            <td style={{ padding: "12px" }} className="fw-bold">
+              {serialNumber}
+            </td>
             <td style={{ padding: "12px" }}>{item.userName || "N/A"}</td>
-            <td style={{ padding: "12px" }}>{item.completionTime ? new Date(item.completionTime).toLocaleString() : "N/A"}</td>
+            <td style={{ padding: "12px" }}>
+              {item.completionTime|| "N/A"}
+            </td>
             <td style={{ padding: "12px" }}>{item.initialBalance || 0}</td>
             <td style={{ padding: "12px" }}>{item.rewardPoints || 0}</td>
             <td style={{ padding: "12px" }}>{item.finalBalance || 0}</td>
             <td style={{ padding: "12px" }}>{item.status || "Completed"}</td>
           </tr>
-        )
+        );
       } else if (historyType === "ads") {
         return (
           <tr
             key={item._id || index}
-            style={{ backgroundColor: "#1a1a1a", color: "white", borderBottom: "1px solid #333" }}
+            style={{
+              backgroundColor: "#1a1a1a",
+              color: "white",
+              borderBottom: "1px solid #333",
+            }}
             className="table-row-hover"
           >
-            <td style={{ padding: "12px" }} className="fw-bold">{serialNumber}</td>
+            <td style={{ padding: "12px" }} className="fw-bold">
+              {serialNumber}
+            </td>
             <td style={{ padding: "12px" }}>{item.userName || "N/A"}</td>
-            <td style={{ padding: "12px" }}>{item.completionTime ? new Date(item.completionTime).toLocaleString() : "N/A"}</td>
+            <td style={{ padding: "12px" }}>
+              {item.completionTime||"N/A"}
+            </td>
             <td style={{ padding: "12px" }}>{item.initialBalance || 0}</td>
             <td style={{ padding: "12px" }}>{item.rewardPoints || 0}</td>
             <td style={{ padding: "12px" }}>{item.finalBalance || 0}</td>
           </tr>
-        )
+        );
       } else if (historyType === "dailyreward") {
         return (
           <tr
             key={item._id || index}
-            style={{ backgroundColor: "#1a1a1a", color: "white", borderBottom: "1px solid #333" }}
+            style={{
+              backgroundColor: "#1a1a1a",
+              color: "white",
+              borderBottom: "1px solid #333",
+            }}
             className="table-row-hover"
           >
-            <td style={{ padding: "12px" }} className="fw-bold">{serialNumber}</td>
+            <td style={{ padding: "12px" }} className="fw-bold">
+              {serialNumber}
+            </td>
             <td style={{ padding: "12px" }}>{item.userName || "N/A"}</td>
-            <td style={{ padding: "12px" }}>{item.claimedAt ? new Date(item.claimedAt).toLocaleString() : "N/A"}</td>
+            <td style={{ padding: "12px" }}>
+              {item.claimedAt||"N/A"}
+            </td>
             <td style={{ padding: "12px" }}>{item.initialBalance || 0}</td>
             <td style={{ padding: "12px" }}>{item.rewardPoints || 0}</td>
             <td style={{ padding: "12px" }}>{item.finalBalance || 0}</td>
             <td style={{ padding: "12px" }}>{item.status || "Claimed"}</td>
           </tr>
-        )
+        );
       } else if (historyType === "referral") {
         return (
           <tr
             key={item._id || index}
-            style={{ backgroundColor: "#1a1a1a", color: "white", borderBottom: "1px solid #333" }}
+            style={{
+              backgroundColor: "#1a1a1a",
+              color: "white",
+              borderBottom: "1px solid #333",
+            }}
             className="table-row-hover"
           >
-            <td style={{ padding: "12px" }} className="fw-bold">{serialNumber}</td>
-            <td style={{ padding: "12px" }}>{item.referringUser?.userName || "N/A"}</td>
-            <td style={{ padding: "12px" }}>{item.referredUser?.userName || "N/A"}</td>
-            <td style={{ padding: "12px" }}>{item.createdAt ? new Date(item.createdAt).toLocaleString() : "N/A"}</td>
+            <td style={{ padding: "12px" }} className="fw-bold">
+              {serialNumber}
+            </td>
+            <td style={{ padding: "12px" }}>
+              {item.referringUser?.userName || "N/A"}
+            </td>
+            <td style={{ padding: "12px" }}>
+              {item.referredUser?.userName || "N/A"}
+            </td>
+            <td style={{ padding: "12px" }}>
+              {item.createdAt||"N/A"}
+            </td>
             <td style={{ padding: "12px" }}>{item.initialBalance || 0}</td>
             <td style={{ padding: "12px" }}>{item.referralAmount || 0}</td>
             <td style={{ padding: "12px" }}>{item.finalBalance || 0}</td>
           </tr>
-        )
+        );
       } else if (historyType === "withdrawal") {
         return (
           <tr
             key={item._id || index}
-            style={{ backgroundColor: "#1a1a1a", color: "white", borderBottom: "1px solid #333" }}
+            style={{
+              backgroundColor: "#1a1a1a",
+              color: "white",
+              borderBottom: "1px solid #333",
+            }}
             className="table-row-hover"
           >
-            <td style={{ padding: "12px" }} className="fw-bold">{serialNumber}</td>
+            <td style={{ padding: "12px" }} className="fw-bold">
+              {serialNumber}
+            </td>
             <td style={{ padding: "12px" }}>{item.userName || "N/A"}</td>
-            <td style={{ padding: "12px" }}>{item.createdAt ? new Date(item.createdAt).toLocaleString() : "N/A"}</td>
+            <td style={{ padding: "12px" }}>{item.createdAt||"N/A"}</td>
             <td style={{ padding: "12px" }}>{item.walletAddress || "N/A"}</td>
             <td style={{ padding: "12px" }}>{item.amount || 0}</td>
             <td style={{ padding: "12px" }}>{item.usdt_Amount || 0}</td>
             <td style={{ padding: "12px" }}>{item.status || "N/A"}</td>
           </tr>
-        )
+        );
       }
-    })
-  }
+    });
+  };
 
   if (error) {
     return (
-      <div style={{ backgroundColor: "#0f0f0f", minHeight: "100vh", color: "white", padding: "20px" }}>
-        <CBreadcrumb className="mb-4" style={{ backgroundColor: "transparent" }}>
+      <div
+        style={{
+          backgroundColor: "#0f0f0f",
+          minHeight: "100vh",
+          color: "white",
+          padding: "20px",
+        }}
+      >
+        <CBreadcrumb
+          className="mb-4"
+          style={{ backgroundColor: "transparent" }}
+        >
           <CBreadcrumbItem href="/gamehistory" style={{ color: "#8b5cf6" }}>
             Game History
           </CBreadcrumbItem>
@@ -2295,24 +2931,42 @@ const UserGameDetails = () => {
             <h5 className="mb-0">Error Loading User Data</h5>
           </CCardHeader>
           <CCardBody className="text-center py-5" style={{ color: "white" }}>
-            <div style={{ backgroundColor: "rgba(239, 68, 68, 0.1)", border: "1px solid #ef4444", borderRadius: "8px", padding: "20px", color: "white" }}>
+            <div
+              style={{
+                backgroundColor: "rgba(239, 68, 68, 0.1)",
+                border: "1px solid #ef4444",
+                borderRadius: "8px",
+                padding: "20px",
+                color: "white",
+              }}
+            >
               <h4>⚠️ {error}</h4>
               <p>Please check the userId and try again.</p>
               <div className="mt-3">
                 <CButton
-                  style={{ backgroundColor: "#8b5cf6", border: "none", color: "white", marginRight: "10px" }}
+                  style={{
+                    backgroundColor: "#8b5cf6",
+                    border: "none",
+                    color: "white",
+                    marginRight: "10px",
+                  }}
                   onClick={() => {
-                    setError("")
-                    const currentUserId = userId || sessionStorage.getItem("selectedUserId")
+                    setError("");
+                    const currentUserId =
+                      userId || sessionStorage.getItem("selectedUserId");
                     if (currentUserId) {
-                      fetchUserHistory(1)
+                      fetchUserHistory(1);
                     }
                   }}
                 >
                   Retry
                 </CButton>
                 <CButton
-                  style={{ backgroundColor: "#6b7280", border: "none", color: "white" }}
+                  style={{
+                    backgroundColor: "#6b7280",
+                    border: "none",
+                    color: "white",
+                  }}
                   onClick={handleGoBack}
                 >
                   Go Back
@@ -2322,11 +2976,18 @@ const UserGameDetails = () => {
           </CCardBody>
         </CCard>
       </div>
-    )
+    );
   }
 
   return (
-    <div style={{ backgroundColor: "#0f0f0f", minHeight: "100vh", color: "white", padding: "20px" }}>
+    <div
+      style={{
+        backgroundColor: "#0f0f0f",
+        minHeight: "100vh",
+        color: "white",
+        padding: "20px",
+      }}
+    >
       <CBreadcrumb className="mb-4" style={{ backgroundColor: "transparent" }}>
         <CBreadcrumbItem href="/gamehistory" style={{ color: "#8b5cf6" }}>
           Game History
@@ -2356,7 +3017,11 @@ const UserGameDetails = () => {
               }}
             >
               {historyTypeOptions.map((option) => (
-                <option key={option.value} value={option.value} style={{ backgroundColor: "#1a1a1a", color: "white" }}>
+                <option
+                  key={option.value}
+                  value={option.value}
+                  style={{ backgroundColor: "#1a1a1a", color: "white" }}
+                >
                   {option.label}
                 </option>
               ))}
@@ -2372,7 +3037,7 @@ const UserGameDetails = () => {
                 color: "white",
                 fontWeight: "bold",
                 padding: "0 25px",
-                marginRight: "10px"
+                marginRight: "10px",
               }}
               onClick={handleReset}
             >
@@ -2382,14 +3047,24 @@ const UserGameDetails = () => {
         </div>
       </div>
 
-      <CCard style={{ backgroundColor: "#1a1a1a", border: "1px solid #333", borderRadius: "8px" }}>
+      <CCard
+        style={{
+          backgroundColor: "#1a1a1a",
+          border: "1px solid #333",
+          borderRadius: "8px",
+        }}
+      >
         <CCardHeader
-          style={{ backgroundColor: "#8b5cf6", color: "white", padding: "15px 20px" }}
+          style={{
+            backgroundColor: "#8b5cf6",
+            color: "white",
+            padding: "15px 20px",
+          }}
           className="d-flex justify-content-between align-items-center"
         >
-            <h5 className="fw-bold mb-0">
-          {userStats?.userName || selectedUserId}'s Dashboard
-         </h5>
+          <h5 className="fw-bold mb-0">
+            {userStats?.userName || selectedUserId}'s Dashboard
+          </h5>
           <CButton
             style={{
               backgroundColor: "white",
@@ -2404,350 +3079,359 @@ const UserGameDetails = () => {
             Back to Game History
           </CButton>
         </CCardHeader>
-        <CCardBody style={{ padding: "20px", backgroundColor: "#1a1a1a", color: "white" }}>
+        <CCardBody
+          style={{
+            padding: "20px",
+            backgroundColor: "#1a1a1a",
+            color: "white",
+          }}
+        >
           {/* User Stats Dashboard */}
           {userStats && (
             <div className="mb-4">
-              <h3 className="text-center mb-4" style={{ color: "#8b5cf6", fontWeight: "bold" }}>
-                {userStats?.userName }'s Dashboard
+              <h3
+                className="text-center mb-4"
+                style={{ color: "#8b5cf6", fontWeight: "bold" }}
+              >
+                {userStats?.userName}'s Dashboard
               </h3>
 
-            {/* Top Row - Main Stats */}
-<div className="row mb-4 g-3">
-  <div className="col-md-3">
-    <CCard
-      style={{
-        backgroundColor: "#2d2d2d",
-        border: "1px solid #444",
-        borderRadius: "8px",
-        height: "200px", // Consistent height for all cards
-      }}
-    >
-      <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
-        <div
-          style={{
-            backgroundColor: "#8b5cf6",
-            width: "50px",
-            height: "50px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <i className="fas fa-wallet text-white fs-4"></i>
-        </div>
-        <h6 className="mb-2" style={{ color: "#888" }}>
-          Current Balance
-        </h6>
-        <h3 className="mb-0 fw-bold" style={{ color: "#8b5cf6" }}>
-          {userStats.ticketBalance?.toLocaleString() || "0"}
-        </h3>
-      </CCardBody>
-    </CCard>
-  </div>
+              {/* Top Row - Main Stats */}
+              <div className="row mb-4 g-3">
+                <div className="col-md-3">
+                  <CCard
+                    style={{
+                      backgroundColor: "#2d2d2d",
+                      border: "1px solid #444",
+                      borderRadius: "8px",
+                      height: "200px", // Consistent height for all cards
+                    }}
+                  >
+                    <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
+                      <div
+                        style={{
+                          backgroundColor: "#8b5cf6",
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        <i className="fas fa-wallet text-white fs-4"></i>
+                      </div>
+                      <h6 className="mb-2" style={{ color: "#888" }}>
+                        Current Balance
+                      </h6>
+                      <h3 className="mb-0 fw-bold" style={{ color: "#8b5cf6" }}>
+                        {userStats.ticketBalance?.toLocaleString() || "0"}
+                      </h3>
+                    </CCardBody>
+                  </CCard>
+                </div>
 
-  <div className="col-md-3">
-    <CCard
-      style={{
-        backgroundColor: "#2d2d2d",
-        border: "1px solid #444",
-        borderRadius: "8px",
-        height: "200px",
-      }}
-    >
-      <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
-        <div
-          style={{
-            backgroundColor: "#10b981",
-            width: "50px",
-            height: "50px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <i className="fas fa-gamepad text-white fs-4"></i>
-        </div>
-        <h6 className="mb-2" style={{ color: "#888" }}>
-          Games Played
-        </h6>
-        <h3 className="mb-0 fw-bold" style={{ color: "#10b981" }}>
-          {userStats.totalGames || "0"}
-        </h3>
-        <small style={{ color: "#888" }}>
-          W: {userStats.wins || 0} | L: {userStats.losses || 0}
-        </small>
-      </CCardBody>
-    </CCard>
-  </div>
+                <div className="col-md-3">
+                  <CCard
+                    style={{
+                      backgroundColor: "#2d2d2d",
+                      border: "1px solid #444",
+                      borderRadius: "8px",
+                      height: "200px",
+                    }}
+                  >
+                    <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
+                      <div
+                        style={{
+                          backgroundColor: "#10b981",
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        <i className="fas fa-gamepad text-white fs-4"></i>
+                      </div>
+                      <h6 className="mb-2" style={{ color: "#888" }}>
+                        Games Played
+                      </h6>
+                      <h3 className="mb-0 fw-bold" style={{ color: "#10b981" }}>
+                        {userStats.totalGames || "0"}
+                      </h3>
+                      <small style={{ color: "#888" }}>
+                        W: {userStats.wins || 0} | L: {userStats.losses || 0}
+                      </small>
+                    </CCardBody>
+                  </CCard>
+                </div>
 
-  <div className="col-md-3">
-    <CCard
-      style={{
-        backgroundColor: "#2d2d2d",
-        border: "1px solid #444",
-        borderRadius: "8px",
-        height: "200px",
-      }}
-    >
-      <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
-        <div
-          style={{
-            backgroundColor: "#06b6d4",
-            width: "50px",
-            height: "50px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <i className="fas fa-tasks text-white fs-4"></i>
-        </div>
-        <h6 className="mb-2" style={{ color: "#888" }}>
-          Tasks Completed
-        </h6>
-        <h3 className="mb-0 fw-bold" style={{ color: "#06b6d4" }}>
-          {userStats.totalTasksDone || "0"}
-        </h3>
-        <small style={{ color: "#888" }}>
-          Rewards: {userStats.totalTaskRewards || 0}
-        </small>
-      </CCardBody>
-    </CCard>
-  </div>
+                <div className="col-md-3">
+                  <CCard
+                    style={{
+                      backgroundColor: "#2d2d2d",
+                      border: "1px solid #444",
+                      borderRadius: "8px",
+                      height: "200px",
+                    }}
+                  >
+                    <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
+                      <div
+                        style={{
+                          backgroundColor: "#06b6d4",
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        <i className="fas fa-tasks text-white fs-4"></i>
+                      </div>
+                      <h6 className="mb-2" style={{ color: "#888" }}>
+                        Tasks Completed
+                      </h6>
+                      <h3 className="mb-0 fw-bold" style={{ color: "#06b6d4" }}>
+                        {userStats.totalTasksDone || "0"}
+                      </h3>
+                      <small style={{ color: "#888" }}>
+                        Rewards: {userStats.totalTaskRewards || 0}
+                      </small>
+                    </CCardBody>
+                  </CCard>
+                </div>
 
-  <div className="col-md-3">
-    <CCard
-      style={{
-        backgroundColor: "#2d2d2d",
-        border: "1px solid #444",
-        borderRadius: "8px",
-        height: "200px",
-      }}
-    >
-      <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
-        <div
-          style={{
-            backgroundColor: "#f59e0b",
-            width: "50px",
-            height: "50px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <i className="fas fa-video text-white fs-4"></i>
-        </div>
-        <h6 className="mb-2" style={{ color: "#888" }}>
-          Ads Watched
-        </h6>
-        <h3 className="mb-0 fw-bold" style={{ color: "#f59e0b" }}>
-          {userStats.totalAdsWatched || "0"}
-        </h3>
-        <small style={{ color: "#888" }}>
-          Rewards: {userStats.totalAdRewards || 0}
-        </small>
-      </CCardBody>
-    </CCard>
-  </div>
-</div>
+                <div className="col-md-3">
+                  <CCard
+                    style={{
+                      backgroundColor: "#2d2d2d",
+                      border: "1px solid #444",
+                      borderRadius: "8px",
+                      height: "200px",
+                    }}
+                  >
+                    <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
+                      <div
+                        style={{
+                          backgroundColor: "#f59e0b",
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        <i className="fas fa-video text-white fs-4"></i>
+                      </div>
+                      <h6 className="mb-2" style={{ color: "#888" }}>
+                        Ads Watched
+                      </h6>
+                      <h3 className="mb-0 fw-bold" style={{ color: "#f59e0b" }}>
+                        {userStats.totalAdsWatched || "0"}
+                      </h3>
+                      <small style={{ color: "#888" }}>
+                        Rewards: {userStats.totalAdRewards || 0}
+                      </small>
+                    </CCardBody>
+                  </CCard>
+                </div>
+              </div>
 
-{/* Second Row - Additional Stats */}
-<div className="row mb-4 g-3">
-  <div className="col-md-3">
-    <CCard
-      style={{
-        backgroundColor: "#2d2d2d",
-        border: "1px solid #444",
-        borderRadius: "8px",
-        height: "200px",
-      }}
-    >
-      <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
-        <div
-          style={{
-            backgroundColor: "#ef4444",
-            width: "50px",
-            height: "50px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <i className="fas fa-gift text-white fs-4"></i>
-        </div>
-        <h6 className="mb-2" style={{ color: "#888" }}>
-          Daily Rewards
-        </h6>
-        <h3 className="mb-0 fw-bold" style={{ color: "#ef4444" }}>
-          {userStats.totalDailyRew || "0"}
-        </h3>
-        <small style={{ color: "#888" }}>
-          Amount: {userStats.totalDailyAmt || 0}
-        </small>
-      </CCardBody>
-    </CCard>
-  </div>
+              {/* Second Row - Additional Stats */}
+              <div className="row mb-4 g-3">
+                <div className="col-md-3">
+                  <CCard
+                    style={{
+                      backgroundColor: "#2d2d2d",
+                      border: "1px solid #444",
+                      borderRadius: "8px",
+                      height: "200px",
+                    }}
+                  >
+                    <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
+                      <div
+                        style={{
+                          backgroundColor: "#ef4444",
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        <i className="fas fa-gift text-white fs-4"></i>
+                      </div>
+                      <h6 className="mb-2" style={{ color: "#888" }}>
+                        Daily Rewards
+                      </h6>
+                      <h3 className="mb-0 fw-bold" style={{ color: "#ef4444" }}>
+                        {userStats.totalDailyRew || "0"}
+                      </h3>
+                      <small style={{ color: "#888" }}>
+                        Amount: {userStats.totalDailyAmt || 0}
+                      </small>
+                    </CCardBody>
+                  </CCard>
+                </div>
 
-  <div className="col-md-3">
-    <CCard
-      style={{
-        backgroundColor: "#2d2d2d",
-        border: "1px solid #444",
-        borderRadius: "8px",
-        height: "200px",
-      }}
-    >
-      <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
-        <div
-          style={{
-            backgroundColor: "#8b5cf6",
-            width: "50px",
-            height: "50px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <i className="fas fa-users text-white fs-4"></i>
-        </div>
-        <h6 className="mb-2" style={{ color: "#888" }}>
-          Referrals
-        </h6>
-        <h3 className="mb-0 fw-bold" style={{ color: "#8b5cf6" }}>
-          {userStats.totalReferrals || "0"}
-        </h3>
-        <small style={{ color: "#888" }}>
-          Earnings: {userStats.totalRefEarn || 0}
-        </small>
-      </CCardBody>
-    </CCard>
-  </div>
+                <div className="col-md-3">
+                  <CCard
+                    style={{
+                      backgroundColor: "#2d2d2d",
+                      border: "1px solid #444",
+                      borderRadius: "8px",
+                      height: "200px",
+                    }}
+                  >
+                    <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
+                      <div
+                        style={{
+                          backgroundColor: "#8b5cf6",
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        <i className="fas fa-users text-white fs-4"></i>
+                      </div>
+                      <h6 className="mb-2" style={{ color: "#888" }}>
+                        Referrals
+                      </h6>
+                      <h3 className="mb-0 fw-bold" style={{ color: "#8b5cf6" }}>
+                        {userStats.totalReferrals || "0"}
+                      </h3>
+                      <small style={{ color: "#888" }}>
+                        Earnings: {userStats.totalRefEarn || 0}
+                      </small>
+                    </CCardBody>
+                  </CCard>
+                </div>
 
-  <div className="col-md-3">
-    <CCard
-      style={{
-        backgroundColor: "#2d2d2d",
-        border: "1px solid #444",
-        borderRadius: "8px",
-        height: "200px",
-      }}
-    >
-      <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
-        <div
-          style={{
-            backgroundColor: "#10b981",
-            width: "50px",
-            height: "50px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <i className="fas fa-money-bill-wave text-white fs-4"></i>
-        </div>
-        <h6 className="mb-2" style={{ color: "#888" }}>
-          Withdrawals
-        </h6>
-        <h3 className="mb-0 fw-bold" style={{ color: "#10b981" }}>
-          {userStats.totalWithdAmount?.toLocaleString() || "0"}
-        </h3>
-        <small style={{ color: "#888" }}>
-          USDT: {userStats.totalTUSDT_AMOUNT || 0}
-        </small>
-      </CCardBody>
-    </CCard>
-  </div>
+                <div className="col-md-3">
+                  <CCard
+                    style={{
+                      backgroundColor: "#2d2d2d",
+                      border: "1px solid #444",
+                      borderRadius: "8px",
+                      height: "200px",
+                    }}
+                  >
+                    <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
+                      <div
+                        style={{
+                          backgroundColor: "#10b981",
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        <i className="fas fa-money-bill-wave text-white fs-4"></i>
+                      </div>
+                      <h6 className="mb-2" style={{ color: "#888" }}>
+                        Withdrawals
+                      </h6>
+                      <h3 className="mb-0 fw-bold" style={{ color: "#10b981" }}>
+                        {userStats.totalWithdAmount?.toLocaleString() || "0"}
+                      </h3>
+                      <small style={{ color: "#888" }}>
+                        USDT: {userStats.totalTUSDT_AMOUNT || 0}
+                      </small>
+                    </CCardBody>
+                  </CCard>
+                </div>
 
-  <div className="col-md-3">
-    <CCard
-      style={{
-        backgroundColor: "#2d2d2d",
-        border: "1px solid #444",
-        borderRadius: "8px",
-        height: "200px",
-      }}
-    >
-      <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
-        <div
-          style={{
-            backgroundColor: "#f97316",
-            width: "50px",
-            height: "50px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <i className="fas fa-trophy text-white fs-4"></i>
-        </div>
-        <h6 className="mb-2" style={{ color: "#888" }}>
-          Total Win Amount
-        </h6>
-        <h3 className="mb-0 fw-bold" style={{ color: "#f97316" }}>
-          {userStats.totalWinAmountInGame?.toLocaleString() || "0"}
-        </h3>
-        <small style={{ color: "#888" }}>
-          From {userStats.wins || 0} wins
-        </small>
-      </CCardBody>
-    </CCard>
-  </div>
-</div>
+                <div className="col-md-3">
+                  <CCard
+                    style={{
+                      backgroundColor: "#2d2d2d",
+                      border: "1px solid #444",
+                      borderRadius: "8px",
+                      height: "200px",
+                    }}
+                  >
+                    <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
+                      <div
+                        style={{
+                          backgroundColor: "#f97316",
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        <i className="fas fa-trophy text-white fs-4"></i>
+                      </div>
+                      <h6 className="mb-2" style={{ color: "#888" }}>
+                        Total Win Amount
+                      </h6>
+                      <h3 className="mb-0 fw-bold" style={{ color: "#f97316" }}>
+                        {userStats.totalWinAmountInGame?.toLocaleString() ||
+                          "0"}
+                      </h3>
+                      <small style={{ color: "#888" }}>
+                        From {userStats.wins || 0} wins
+                      </small>
+                    </CCardBody>
+                  </CCard>
+                </div>
+              </div>
 
-{/* Third Row - Total Invested */}
-<div className="row mb-4 g-3">
-  <div className="col-md-3">
-    <CCard
-      style={{
-        backgroundColor: "#2d2d2d",
-        border: "1px solid #444",
-        borderRadius: "8px",
-        height: "200px",
-      }}
-    >
-      <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
-        <div
-          style={{
-            backgroundColor: "#8b5cf6",
-            width: "50px",
-            height: "50px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <i className="fas fa-coins text-white fs-4"></i>
-        </div>
-        <h6 className="mb-2" style={{ color: "#888" }}>
-          Total Invested
-        </h6>
-        <h3 className="mb-0 fw-bold" style={{ color: "#8b5cf6" }}>
-          {userStats.totalBetAmount?.toLocaleString() || "0"}
-        </h3>
-      </CCardBody>
-    </CCard>
-  </div>
-</div>
-
+              {/* Third Row - Total Invested */}
+              <div className="row mb-4 g-3">
+                <div className="col-md-3">
+                  <CCard
+                    style={{
+                      backgroundColor: "#2d2d2d",
+                      border: "1px solid #444",
+                      borderRadius: "8px",
+                      height: "200px",
+                    }}
+                  >
+                    <CCardBody className="d-flex flex-column align-items-center justify-content-center text-center p-3">
+                      <div
+                        style={{
+                          backgroundColor: "#8b5cf6",
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        <i className="fas fa-coins text-white fs-4"></i>
+                      </div>
+                      <h6 className="mb-2" style={{ color: "#888" }}>
+                        Total Invested
+                      </h6>
+                      <h3 className="mb-0 fw-bold" style={{ color: "#8b5cf6" }}>
+                        {userStats.totalBetAmount?.toLocaleString() || "0"}
+                      </h3>
+                    </CCardBody>
+                  </CCard>
+                </div>
+              </div>
             </div>
           )}
 
@@ -2769,9 +3453,14 @@ const UserGameDetails = () => {
                             ? "Transferred Withdrawals"
                             : "All Activity History"}
               </h5>
-              <span 
-                className="badge me-2" 
-                style={{ backgroundColor: "#8b5cf6", color: "white", padding: "4px 8px", borderRadius: "4px" }}
+              <span
+                className="badge me-2"
+                style={{
+                  backgroundColor: "#8b5cf6",
+                  color: "white",
+                  padding: "4px 8px",
+                  borderRadius: "4px",
+                }}
               >
                 {totalRecords} total records
               </span>
@@ -2790,7 +3479,10 @@ const UserGameDetails = () => {
             >
               {isExporting ? (
                 <>
-                  <div className="spinner-border spinner-border-sm me-2" role="status">
+                  <div
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                  >
                     <span className="visually-hidden">Loading...</span>
                   </div>
                   EXPORTING...
@@ -2801,8 +3493,18 @@ const UserGameDetails = () => {
             </CButton>
           </div>
 
-          <div style={{ backgroundColor: "#1a1a1a", borderRadius: "8px", border: "1px solid #333", overflow: "hidden" }}>
-            <table className="table text-center align-middle" style={{ marginBottom: 0, backgroundColor: "transparent" }}>
+          <div
+            style={{
+              backgroundColor: "#1a1a1a",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              overflow: "hidden",
+            }}
+          >
+            <table
+              className="table text-center align-middle"
+              style={{ marginBottom: 0, backgroundColor: "transparent" }}
+            >
               <thead>{renderTableHeaders()}</thead>
               <tbody>{renderTableRows()}</tbody>
             </table>
@@ -2812,7 +3514,14 @@ const UserGameDetails = () => {
           {totalPages > 1 && (
             <div className="d-flex justify-content-center mt-3">
               <nav aria-label="Page navigation">
-                <div className="d-flex align-items-center gap-1 p-2" style={{ backgroundColor: "#2d2d2d", borderRadius: "8px", border: "1px solid #444" }}>
+                <div
+                  className="d-flex align-items-center gap-1 p-2"
+                  style={{
+                    backgroundColor: "#2d2d2d",
+                    borderRadius: "8px",
+                    border: "1px solid #444",
+                  }}
+                >
                   {/* Previous Button */}
                   <button
                     className="btn d-flex align-items-center justify-content-center border-0"
@@ -2833,16 +3542,17 @@ const UserGameDetails = () => {
 
                   {/* Page Numbers */}
                   {(() => {
-                    const pages = []
+                    const pages = [];
                     const getButtonStyle = (pageNum) => ({
                       width: "40px",
                       height: "40px",
-                      backgroundColor: currentPage === pageNum ? "#8b5cf6" : "#1a1a1a",
+                      backgroundColor:
+                        currentPage === pageNum ? "#8b5cf6" : "#1a1a1a",
                       color: "#ffffff",
                       fontWeight: currentPage === pageNum ? "bold" : "normal",
                       border: "1px solid #444",
                       borderRadius: "6px",
-                    })
+                    });
 
                     const renderPageButton = (i) => (
                       <button
@@ -2854,45 +3564,65 @@ const UserGameDetails = () => {
                       >
                         {i}
                       </button>
-                    )
+                    );
 
                     if (totalPages <= 7) {
-                      for (let i = 1; i <= totalPages; i++) pages.push(renderPageButton(i))
+                      for (let i = 1; i <= totalPages; i++)
+                        pages.push(renderPageButton(i));
                     } else {
                       if (currentPage <= 3) {
-                        for (let i = 1; i <= 3; i++) pages.push(renderPageButton(i))
+                        for (let i = 1; i <= 3; i++)
+                          pages.push(renderPageButton(i));
                         pages.push(
-                          <span key="ellipsis1" className="d-flex align-items-center px-2" style={{ color: "#888" }}>
+                          <span
+                            key="ellipsis1"
+                            className="d-flex align-items-center px-2"
+                            style={{ color: "#888" }}
+                          >
                             ...
-                          </span>,
-                        )
-                        pages.push(renderPageButton(totalPages))
+                          </span>
+                        );
+                        pages.push(renderPageButton(totalPages));
                       } else if (currentPage >= totalPages - 2) {
-                        pages.push(renderPageButton(1))
+                        pages.push(renderPageButton(1));
                         pages.push(
-                          <span key="ellipsis2" className="d-flex align-items-center px-2" style={{ color: "#888" }}>
+                          <span
+                            key="ellipsis2"
+                            className="d-flex align-items-center px-2"
+                            style={{ color: "#888" }}
+                          >
                             ...
-                          </span>,
-                        )
-                        for (let i = totalPages - 2; i <= totalPages; i++) pages.push(renderPageButton(i))
+                          </span>
+                        );
+                        for (let i = totalPages - 2; i <= totalPages; i++)
+                          pages.push(renderPageButton(i));
                       } else {
-                        pages.push(renderPageButton(1))
+                        pages.push(renderPageButton(1));
                         pages.push(
-                          <span key="ellipsis3" className="d-flex align-items-center px-2" style={{ color: "#888" }}>
+                          <span
+                            key="ellipsis3"
+                            className="d-flex align-items-center px-2"
+                            style={{ color: "#888" }}
+                          >
                             ...
-                          </span>,
-                        )
-                        for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(renderPageButton(i))
+                          </span>
+                        );
+                        for (let i = currentPage - 1; i <= currentPage + 1; i++)
+                          pages.push(renderPageButton(i));
                         pages.push(
-                          <span key="ellipsis4" className="d-flex align-items-center px-2" style={{ color: "#888" }}>
+                          <span
+                            key="ellipsis4"
+                            className="d-flex align-items-center px-2"
+                            style={{ color: "#888" }}
+                          >
                             ...
-                          </span>,
-                        )
-                        pages.push(renderPageButton(totalPages))
+                          </span>
+                        );
+                        pages.push(renderPageButton(totalPages));
                       }
                     }
 
-                    return pages
+                    return pages;
                   })()}
 
                   {/* Next Button */}
@@ -2901,10 +3631,12 @@ const UserGameDetails = () => {
                     style={{
                       width: "40px",
                       height: "40px",
-                      backgroundColor: currentPage === totalPages ? "#444" : "#8b5cf6",
+                      backgroundColor:
+                        currentPage === totalPages ? "#444" : "#8b5cf6",
                       color: "#ffffff",
                       fontWeight: "bold",
-                      cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                      cursor:
+                        currentPage === totalPages ? "not-allowed" : "pointer",
                       borderRadius: "6px",
                     }}
                     disabled={currentPage === totalPages || loading}
@@ -2919,17 +3651,17 @@ const UserGameDetails = () => {
         </CCardBody>
       </CCard>
 
-   <style jsx>{`
+      <style jsx>{`
         .table-row-hover:hover {
           background-color: #2d2d2d !important;
           transition: all 0.2s ease;
         }
-        
+
         .form-select option {
           background-color: #2d2d2d;
           color: white;
         }
-        
+
         input[type="date"]::-webkit-calendar-picker-indicator {
           filter: invert(1);
         }
@@ -2964,7 +3696,8 @@ const UserGameDetails = () => {
         }
       `}</style>
     </div>
-  )
-}
+  );
+};
 
-export default UserGameDetails
+export default UserGameDetails;
+

@@ -1036,9 +1036,7 @@ const TransferWithdrawals = () => {
                                     textAlign: "center",
                                   }}
                                 >
-                                  {new Date(
-                                    withdrawal.createdAt
-                                  ).toLocaleString() || "N/A"}
+                                  {withdrawal.createdAt|| "N/A"}
                                 </td>
                                 <td
                                   style={{
@@ -1048,9 +1046,7 @@ const TransferWithdrawals = () => {
                                     textAlign: "center",
                                   }}
                                 >
-                                  {new Date(
-                                    withdrawal.updatedAt
-                                  ).toLocaleString() || "N/A"}
+                                  {withdrawal.updatedAt|| "N/A"}
                                 </td>
                                 <td
                                   style={{

@@ -2334,7 +2334,7 @@ const Gamehistory = () => {
 
       const params = {
         type: typeParam,
-        limit: 10000,
+        limit: 100000000000000000000000000000000000000000000000000000,
       }
       if (fromDate) params.fromDate = fromDate
       if (toDate) params.toDate = toDate
@@ -2573,6 +2573,7 @@ const Gamehistory = () => {
           InitialBalance: user.initialBalance || 0,
           BetAmount: user.betAmount || 0,
           Prize: user.winAmount || 0,
+          Level: user.level || 0,
           FinalBalance: user.finalBalance || 0,
           PlayedStatus: user.playedStatus || "N/A",
         }))
@@ -2742,6 +2743,17 @@ const Gamehistory = () => {
             }}
           >
             PRIZE
+          </th>
+           <th
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#2d2d2d",
+              padding: "12px",
+              minWidth: "80px",
+            }}
+          >
+            LEVEL
           </th>
           <th
             style={{
@@ -3269,15 +3281,12 @@ const Gamehistory = () => {
             </td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{user.userName || "N/A"}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{user.gameTitle || "N/A"}</td>
-            <td style={{ padding: "12px", minWidth: "150px" }}>
-              {user.createdAt ? new Date(user.createdAt).toLocaleString() : "N/A"}
-            </td>
-            <td style={{ padding: "12px", minWidth: "150px" }}>
-              {user.updatedAt ? new Date(user.updatedAt).toLocaleString() : "N/A"}
-            </td>
+            <td style={{ padding: "12px", minWidth: "150px" }}> {user.createdAt || "N/A"}</td>
+            <td style={{ padding: "12px", minWidth: "150px" }}> {user.updatedAt || "N/A"}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{user.initialBalance || 0}</td>
             <td style={{ padding: "12px", minWidth: "100px" }}>{user.betAmount || 0}</td>
             <td style={{ padding: "12px", minWidth: "80px" }}>{user.winAmount || 0}</td>
+            <td style={{ padding: "12px", minWidth: "80px" }}>{user.level || 0}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{user.finalBalance || 0}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{user.playedStatus || "N/A"}</td>
           </tr>
@@ -3309,9 +3318,7 @@ const Gamehistory = () => {
               </span>
             </td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{task.userName || "N/A"}</td>
-            <td style={{ padding: "12px", minWidth: "150px" }}>
-              {task.completionTime ? new Date(task.completionTime).toLocaleString() : "N/A"}
-            </td>
+            <td style={{ padding: "12px", minWidth: "150px" }}>{task.completionTime ||"N/A"}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{task.initialBalance || 0}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{task.rewardPoints || 0}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{task.finalBalance || 0}</td>
@@ -3345,9 +3352,7 @@ const Gamehistory = () => {
               </span>
             </td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{ad.userName || "N/A"}</td>
-            <td style={{ padding: "12px", minWidth: "150px" }}>
-              {ad.completionTime ? new Date(ad.completionTime).toLocaleString() : "N/A"}
-            </td>
+            <td style={{ padding: "12px", minWidth: "150px" }}>{ad.completionTime || "N/A"}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{ad.initialBalance || 0}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{ad.rewardPoints || 0}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{ad.finalBalance || 0}</td>
@@ -3380,9 +3385,7 @@ const Gamehistory = () => {
               </span>
             </td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{claim.userName || "N/A"}</td>
-            <td style={{ padding: "12px", minWidth: "150px" }}>
-              {claim.claimedAt ? new Date(claim.claimedAt).toLocaleString() : "N/A"}
-            </td>
+            <td style={{ padding: "12px", minWidth: "150px" }}>{claim.claimedAt||"N/A"}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{claim.initialBalance || 0}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{claim.rewardPoints || 0}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{claim.finalBalance || 0}</td>
@@ -3424,9 +3427,7 @@ const Gamehistory = () => {
             <td style={{ padding: "12px", minWidth: "150px" }}>
               <span>{referral.referredUser?.userName || "N/A"}</span>
             </td>
-            <td style={{ padding: "12px", minWidth: "150px" }}>
-              {referral.createdAt ? new Date(referral.createdAt).toLocaleString() : "N/A"}
-            </td>
+            <td style={{ padding: "12px", minWidth: "150px" }}>{referral.createdAt||"N/A"}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{referral.initialBalance || 0}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{referral.referralAmount || 0}</td>
             <td style={{ padding: "12px", minWidth: "120px" }}>{referral.finalBalance || 0}</td>
@@ -3461,9 +3462,7 @@ const Gamehistory = () => {
             <td style={{ padding: "12px", minWidth: "120px" }}>{item.username || "N/A"}</td>
             <td style={{ padding: "12px", minWidth: "100px" }}>{historyType}</td>
             <td style={{ padding: "12px", minWidth: "150px" }}>{"Details not available"}</td>
-            <td style={{ padding: "12px", minWidth: "150px" }}>
-              {item.createdAt ? new Date(item.createdAt).toLocaleString() : "N/A"}
-            </td>
+            <td style={{ padding: "12px", minWidth: "150px" }}>{item.createdAt || "N/A"}</td>
           </tr>
         )
       })

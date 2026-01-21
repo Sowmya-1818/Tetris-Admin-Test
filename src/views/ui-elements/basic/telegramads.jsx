@@ -1865,7 +1865,7 @@ const TelegramAds = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const adsPerPage = 10;
-  const [totalPages, setTotalPages] = useState(1); // Add this line to initialize totalPages
+  const [totalPages, setTotalPages] = useState(); // Add this line to initialize totalPages
 
   // Dark theme colors (matching tasks page)
   const darkTheme = {

@@ -569,7 +569,7 @@ const SignIn = () => {
                             type="email"
                             id="email"
                             name="email"
-                            placeholder="test@techzaa.com"
+                            // placeholder="test@techzaa.com"
                             autoComplete="email"
                             value={values.email}
                             onChange={handleChange}
@@ -627,7 +627,7 @@ const SignIn = () => {
                             type={showPassword ? "text" : "password"}
                             id="password"
                             name="password"
-                            placeholder="••••••••"
+                            // placeholder="••••••••"
                             autoComplete="current-password"
                             value={values.password}
                             onChange={handleChange}

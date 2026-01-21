@@ -1220,11 +1220,7 @@ const WithdrawalMethods = () => {
                                     textAlign: "center",
                                   }}
                                 >
-                                  {method.createdAt
-                                    ? new Date(
-                                        method.createdAt
-                                      ).toLocaleString()
-                                    : "N/A"}
+                                  {method.createdAt|| "N/A"}
                                 </td>
                                 <td
                                   style={{

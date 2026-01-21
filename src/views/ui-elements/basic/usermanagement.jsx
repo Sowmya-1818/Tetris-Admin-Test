@@ -2774,7 +2774,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect} from "react";
 import {
   Row,
   Col,
@@ -2856,47 +2856,46 @@ const Usermanagement = () => {
   };
 
   // Fetch users with backend pagination
-const fetchUsers = async (page = 1, limit = usersPerPage, name = "") => {
-  try {
-    setIsLoading(true);
+  const fetchUsers = async (page = 1, limit = usersPerPage, name = "") => {
+    try {
+      setIsLoading(true);
 
-    const query = new URLSearchParams({
-      page,
-      limit,
-      ...(name && { userName: name }), // add search term if exists
-    }).toString();
+      const query = new URLSearchParams({
+        page,
+        limit,
+        ...(name && { userName: name }), // add search term if exists
+      }).toString();
 
-    const response = await getData(`${GET_ALL_USERS}?${query}`);
-    console.log("GET_ALL_USERS Response:", response);
+      const response = await getData(`${GET_ALL_USERS}?${query}`);
+      console.log("GET_ALL_USERS Response:", response);
 
-    if (response?.users) {
-      setUsers(response.users);
-      setTotalPages(response.totalPages || 1);
-      setTotalUsers(response.count || 0);
-      setCurrentPage(response.page || 1);
-    } else {
+      if (response?.users) {
+        setUsers(response.users);
+        setTotalPages(response.totalPages || 1);
+        setTotalUsers(response.count || 0);
+        setCurrentPage(response.page || 1);
+      } else {
+        setUsers([]);
+        setTotalPages(1);
+        setTotalUsers(0);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
       setUsers([]);
       setTotalPages(1);
       setTotalUsers(0);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    setUsers([]);
-    setTotalPages(1);
-    setTotalUsers(0);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
-useEffect(() => {
-  const delayDebounce = setTimeout(() => {
-    fetchUsers(1, usersPerPage, searchTerm); // Pass searchTerm to backend
-  }, 400); // 400ms debounce
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      fetchUsers(1, usersPerPage, searchTerm); // Pass searchTerm to backend
+    }, 400); // 400ms debounce
 
-  return () => clearTimeout(delayDebounce);
-}, [searchTerm]);
-
+    return () => clearTimeout(delayDebounce);
+  }, [searchTerm]);
 
   // Initial fetch
   useEffect(() => {
@@ -2919,31 +2918,31 @@ useEffect(() => {
   }, [searchTerm, users]);
 
   // Filtered users based on search term (client-side filtering)
-const filteredUsers = users;
+  const filteredUsers = users;
 
   // Pagination handlers
   const nextPage = () => {
-  if (currentPage < totalPages) {
-    const newPage = currentPage + 1;
-    setCurrentPage(newPage);
-    fetchUsers(newPage, usersPerPage, searchTerm);
-  }
-};
+    if (currentPage < totalPages) {
+      const newPage = currentPage + 1;
+      setCurrentPage(newPage);
+      fetchUsers(newPage, usersPerPage, searchTerm);
+    }
+  };
 
-const prevPage = () => {
-  if (currentPage > 1) {
-    const newPage = currentPage - 1;
-    setCurrentPage(newPage);
-    fetchUsers(newPage, usersPerPage, searchTerm);
-  }
-};
+  const prevPage = () => {
+    if (currentPage > 1) {
+      const newPage = currentPage - 1;
+      setCurrentPage(newPage);
+      fetchUsers(newPage, usersPerPage, searchTerm);
+    }
+  };
 
-const goToPage = (page) => {
-  if (page >= 1 && page <= totalPages && page !== currentPage) {
-    setCurrentPage(page);
-    fetchUsers(page, usersPerPage, searchTerm);
-  }
-};
+  const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
+      setCurrentPage(page);
+      fetchUsers(page, usersPerPage, searchTerm);
+    }
+  };
 
   const openModal = (user) => {
     setSelectedUser(user);
@@ -3220,81 +3219,80 @@ const goToPage = (page) => {
                       background: `linear-gradient(135deg, ${darkTheme.accent3}, #7c3aed)`,
                     }}
                   >
-                   <tr>
-  <th
-    style={{
-      color: "white",
-      fontWeight: "bold",
-      backgroundColor: "#2d2d2d",
-      padding: "12px",
-      minWidth: "60px",
-      textAlign: "center",
-    }}
-  >
-    S.NO
-  </th>
-  <th
-    style={{
-      color: "white",
-      fontWeight: "bold",
-      backgroundColor: "#2d2d2d",
-      padding: "12px",
-      minWidth: "120px",
-      textAlign: "center",
-    }}
-  >
-    USER NAME
-  </th>
-  <th
-    style={{
-      color: "white",
-      fontWeight: "bold",
-      backgroundColor: "#2d2d2d",
-      padding: "12px",
-      minWidth: "100px",
-      textAlign: "center",
-    }}
-  >
-    USER POINTS
-  </th>
-  <th
-    style={{
-      color: "white",
-      fontWeight: "bold",
-      backgroundColor: "#2d2d2d",
-      padding: "12px",
-      minWidth: "150px",
-      textAlign: "center",
-    }}
-  >
-    EMAIL
-  </th>
-  <th
-    style={{
-      color: "white",
-      fontWeight: "bold",
-      backgroundColor: "#2d2d2d",
-      padding: "12px",
-      minWidth: "150px",
-      textAlign: "center",
-    }}
-  >
-    LOGIN TYPE
-  </th>
-  <th
-    style={{
-      color: "white",
-      fontWeight: "bold",
-      backgroundColor: "#2d2d2d",
-      padding: "12px",
-      minWidth: "120px",
-      textAlign: "center",
-    }}
-  >
-    ACTION
-  </th>
-</tr>
-
+                    <tr>
+                      <th
+                        style={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#2d2d2d",
+                          padding: "12px",
+                          minWidth: "60px",
+                          textAlign: "center",
+                        }}
+                      >
+                        S.NO
+                      </th>
+                      <th
+                        style={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#2d2d2d",
+                          padding: "12px",
+                          minWidth: "120px",
+                          textAlign: "center",
+                        }}
+                      >
+                        USER NAME
+                      </th>
+                      <th
+                        style={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#2d2d2d",
+                          padding: "12px",
+                          minWidth: "100px",
+                          textAlign: "center",
+                        }}
+                      >
+                        USER POINTS
+                      </th>
+                      <th
+                        style={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#2d2d2d",
+                          padding: "12px",
+                          minWidth: "150px",
+                          textAlign: "center",
+                        }}
+                      >
+                        EMAIL
+                      </th>
+                      <th
+                        style={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#2d2d2d",
+                          padding: "12px",
+                          minWidth: "150px",
+                          textAlign: "center",
+                        }}
+                      >
+                        LOGIN TYPE
+                      </th>
+                      <th
+                        style={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#2d2d2d",
+                          padding: "12px",
+                          minWidth: "120px",
+                          textAlign: "center",
+                        }}
+                      >
+                        ACTION
+                      </th>
+                    </tr>
                   </thead>
                   <tbody>
                     {isLoading ? (
@@ -3469,182 +3467,165 @@ const goToPage = (page) => {
               </div>
 
               {/* Pagination */}
+              {/* Pagination (drop-in replacement) */}
               {!searchTerm && totalPages > 1 && (
-                <div className="d-flex justify-content-center mt-4">
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                      background: darkTheme.bgSecondary,
-                      padding: "15px",
-                      borderRadius: "15px",
-                      border: `1px solid ${darkTheme.border}`,
-                    }}
-                  >
-                    {/* Previous Button */}
-                    <button
-                      disabled={currentPage === 1}
-                      onClick={prevPage}
+                <div className="d-flex justify-content-center mt-3">
+                  <nav aria-label="Page navigation">
+                    <div
+                      className="d-flex align-items-center gap-1 p-2"
                       style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "10px",
-                        border: "none",
-                        background:
-                          currentPage === 1
-                            ? darkTheme.bgTertiary
-                            : `linear-gradient(135deg, ${darkTheme.accent3}, #7c3aed)`,
-                        color: currentPage === 1 ? darkTheme.textMuted : "#fff",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        cursor: currentPage === 1 ? "not-allowed" : "pointer",
-                        transition: "all 0.3s ease",
+                        backgroundColor: "#2d2d2d",
+                        borderRadius: "8px",
+                        border: "1px solid #444",
                       }}
                     >
-                      &#8249;
-                    </button>
+                      {/* Previous */}
+                      <button
+                        className="btn d-flex align-items-center justify-content-center border-0"
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                          backgroundColor:
+                            currentPage === 1 ? "#444" : "#8b5cf6",
+                          color: "#ffffff",
+                          fontWeight: "bold",
+                          cursor:
+                            currentPage === 1 || isLoading
+                              ? "not-allowed"
+                              : "pointer",
+                          borderRadius: "6px",
+                        }}
+                        disabled={currentPage === 1 || isLoading}
+                        onClick={prevPage}
+                        aria-label="Previous page"
+                      >
+                        &#8249;
+                      </button>
 
-                    {/* Page Numbers */}
-                    {(() => {
-                      const pages = [];
-                      const getButtonStyle = (pageNum) => ({
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "10px",
-                        border: "none",
-                        background:
-                          currentPage === pageNum
-                            ? `linear-gradient(135deg, ${darkTheme.accent3}, #7c3aed)`
-                            : darkTheme.bgTertiary,
-                        color:
-                          currentPage === pageNum
-                            ? "#fff"
-                            : darkTheme.textPrimary,
-                        fontWeight: currentPage === pageNum ? "600" : "normal",
-                        transition: "all 0.3s ease",
-                      });
-
-                      const renderPageButton = (i) => (
-                        <Button
-                          key={i}
-                          style={getButtonStyle(i)}
-                          onClick={() => goToPage(i)}
-                          onMouseEnter={(e) => {
-                            if (currentPage !== i) {
-                              e.target.style.background = darkTheme.bgCardHover;
+                      {/* Page Numbers */}
+                      {(() => {
+                        const pages = [];
+                        const PageBtn = (i, isActive = false) => (
+                          <button
+                            key={i}
+                            className="btn d-flex align-items-center justify-content-center border-0"
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              backgroundColor: isActive ? "#8b5cf6" : "#1a1a1a",
+                              color: "#ffffff",
+                              fontWeight: isActive ? "bold" : "normal",
+                              border: "1px solid #444",
+                              borderRadius: "6px",
+                              cursor:
+                                isActive || isLoading ? "default" : "pointer",
+                              opacity: isLoading ? 0.7 : 1,
+                            }}
+                            disabled={isActive || isLoading}
+                            onClick={() =>
+                              !isActive && !isLoading && goToPage(i)
                             }
-                          }}
-                          onMouseLeave={(e) => {
-                            if (currentPage !== i) {
-                              e.target.style.background = darkTheme.bgTertiary;
-                            }
-                          }}
-                        >
-                          {i}
-                        </Button>
-                      );
+                          >
+                            {i}
+                          </button>
+                        );
 
-                      if (totalPages <= 7) {
-                        for (let i = 1; i <= totalPages; i++)
-                          pages.push(renderPageButton(i));
-                      } else {
-                        if (currentPage <= 3) {
-                          for (let i = 1; i <= 3; i++)
-                            pages.push(renderPageButton(i));
-                          pages.push(
-                            <span
-                              key="ellipsis1"
-                              style={{
-                                color: darkTheme.textMuted,
-                                padding: "0 10px",
-                              }}
-                            >
-                              ...
-                            </span>
-                          );
-                          pages.push(renderPageButton(totalPages));
-                        } else if (currentPage >= totalPages - 2) {
-                          pages.push(renderPageButton(1));
-                          pages.push(
-                            <span
-                              key="ellipsis2"
-                              style={{
-                                color: darkTheme.textMuted,
-                                padding: "0 10px",
-                              }}
-                            >
-                              ...
-                            </span>
-                          );
-                          for (let i = totalPages - 2; i <= totalPages; i++)
-                            pages.push(renderPageButton(i));
+                        if (totalPages <= 7) {
+                          for (let i = 1; i <= totalPages; i++) {
+                            pages.push(PageBtn(i, currentPage === i));
+                          }
                         } else {
-                          pages.push(renderPageButton(1));
-                          pages.push(
-                            <span
-                              key="ellipsis3"
-                              style={{
-                                color: darkTheme.textMuted,
-                                padding: "0 10px",
-                              }}
-                            >
-                              ...
-                            </span>
-                          );
-                          for (
-                            let i = currentPage - 1;
-                            i <= currentPage + 1;
-                            i++
-                          )
-                            pages.push(renderPageButton(i));
-                          pages.push(
-                            <span
-                              key="ellipsis4"
-                              style={{
-                                color: darkTheme.textMuted,
-                                padding: "0 10px",
-                              }}
-                            >
-                              ...
-                            </span>
-                          );
-                          pages.push(renderPageButton(totalPages));
+                          if (currentPage <= 3) {
+                            for (let i = 1; i <= 3; i++)
+                              pages.push(PageBtn(i, currentPage === i));
+                            if (totalPages > 4) {
+                              pages.push(
+                                <span
+                                  key="ellipsis1"
+                                  className="d-flex align-items-center px-2"
+                                  style={{ color: "#888" }}
+                                >
+                                  ...
+                                </span>
+                              );
+                              pages.push(
+                                PageBtn(totalPages, currentPage === totalPages)
+                              );
+                            }
+                          } else if (currentPage >= totalPages - 2) {
+                            pages.push(PageBtn(1, currentPage === 1));
+                            pages.push(
+                              <span
+                                key="ellipsis2"
+                                className="d-flex align-items-center px-2"
+                                style={{ color: "#888" }}
+                              >
+                                ...
+                              </span>
+                            );
+                            for (let i = totalPages - 2; i <= totalPages; i++) {
+                              pages.push(PageBtn(i, currentPage === i));
+                            }
+                          } else {
+                            pages.push(PageBtn(1, currentPage === 1));
+                            pages.push(
+                              <span
+                                key="ellipsis3"
+                                className="d-flex align-items-center px-2"
+                                style={{ color: "#888" }}
+                              >
+                                ...
+                              </span>
+                            );
+                            for (
+                              let i = currentPage - 1;
+                              i <= currentPage + 1;
+                              i++
+                            ) {
+                              pages.push(PageBtn(i, currentPage === i));
+                            }
+                            pages.push(
+                              <span
+                                key="ellipsis4"
+                                className="d-flex align-items-center px-2"
+                                style={{ color: "#888" }}
+                              >
+                                ...
+                              </span>
+                            );
+                            pages.push(
+                              PageBtn(totalPages, currentPage === totalPages)
+                            );
+                          }
                         }
-                      }
 
-                      return pages;
-                    })()}
+                        return pages;
+                      })()}
 
-                    {/* Next Button */}
-                    <button
-                      disabled={currentPage >= totalPages}
-                      onClick={nextPage}
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "10px",
-                        border: "none",
-                        background:
-                          currentPage >= totalPages
-                            ? darkTheme.bgTertiary
-                            : `linear-gradient(135deg, ${darkTheme.accent3}, #7c3aed)`,
-                        color:
-                          currentPage >= totalPages
-                            ? darkTheme.textMuted
-                            : "#fff",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        cursor:
-                          currentPage >= totalPages ? "not-allowed" : "pointer",
-                        transition: "all 0.3s ease",
-                      }}
-                    >
-                      &#8250;
-                    </button>
-                  </div>
+                      {/* Next */}
+                      <button
+                        className="btn d-flex align-items-center justify-content-center border-0"
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                          backgroundColor:
+                            currentPage >= totalPages ? "#444" : "#8b5cf6",
+                          color: "#ffffff",
+                          fontWeight: "bold",
+                          cursor:
+                            currentPage >= totalPages || isLoading
+                              ? "not-allowed"
+                              : "pointer",
+                          borderRadius: "6px",
+                        }}
+                        disabled={currentPage >= totalPages || isLoading}
+                        onClick={nextPage}
+                        aria-label="Next page"
+                      >
+                        &#8250;
+                      </button>
+                    </div>
+                  </nav>
                 </div>
               )}
             </Card.Body>
@@ -3920,12 +3901,12 @@ const goToPage = (page) => {
           background-color: #2d2d2d !important;
           transition: all 0.2s ease;
         }
-        
+
         .form-select option {
           background-color: #2d2d2d;
           color: white;
         }
-        
+
         input[type="date"]::-webkit-calendar-picker-indicator {
           filter: invert(1);
         }

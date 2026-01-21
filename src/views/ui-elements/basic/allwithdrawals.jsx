@@ -947,10 +947,10 @@ const AllWithdrawals = () => {
           {withdrawal.amount || 0}
         </td>
         <td style={{ padding: "20px", color: darkTheme.textPrimary, border: "none", textAlign: "center" }}>
-          {new Date(withdrawal.createdAt).toLocaleString() || "N/A"}
+          {withdrawal.createdAt|| "N/A"}
         </td>
         <td style={{ padding: "20px", color: darkTheme.textPrimary, border: "none", textAlign: "center" }}>
-          {new Date(withdrawal.updatedAt).toLocaleString() || "N/A"}
+          {withdrawal.updatedAt || "N/A"}
         </td>
         <td style={{ padding: "20px", border: "none", textAlign: "center" }}>
           <span
